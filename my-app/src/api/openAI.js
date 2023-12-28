@@ -146,7 +146,6 @@ export async function getImageFromOpenAI(prompt) {
         }
       )
       .then((response) => {
-        console.log("Image url: " + response.data.data[0].url);
         resolve(response.data.data[0].url);
       })
       .catch((error) => {
