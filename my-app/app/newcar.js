@@ -7,75 +7,77 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { router } from 'expo-router';
 import SelectDropdown from "react-native-select-dropdown";
 import { getImageFromOpenAI } from "../src/api/openAI";
+import { getCachedData, setCachedData } from "../saveData";
 
 const makes = [
-    "Abarth",
-    "Alfa Romeo",
-    "Aston Martin",
-    "Audi",
-    "Bentley",
-    "BMW",
-    "Bugatti",
-    "Cadillac",
-    "Chevrolet",
-    "Chrysler",
-    "Citroën",
-    "Dacia",
-    "Daewoo",
-    "Daihatsu",
-    "Dodge",
-    "Donkervoort",
-    "DS",
-    "Ferrari",
-    "Fiat",
-    "Fisker",
-    "Ford",
-    "Honda",
-    "Hummer",
-    "Hyundai",
-    "Infiniti",
-    "Iveco",
-    "Jaguar",
-    "Jeep",
-    "Kia",
-    "KTM",
-    "Lada",
-    "Lamborghini",
-    "Lancia",
-    "Land Rover",
-    "Landwind",
-    "Lexus",
-    "Lotus",
-    "Maserati",
-    "Maybach",
-    "Mazda",
-    "McLaren",
-    "Mercedes-Benz",
-    "MG",
-    "Mini",
-    "Mitsubishi",
-    "Morgan",
-    "Nissan",
-    "Opel",
-    "Peugeot",
-    "Porsche",
-    "Renault",
-    "Rolls-Royce",
-    "Rover",
-    "Saab",
-    "Seat",
-    "Skoda",
-    "Smart",
-    "SsangYong",
-    "Subaru",
-    "Suzuki",
-    "Tesla",
-    "Toyota",
-    "Volkswagen",
-    "Volvo"
-  ]
+  "Abarth",
+  "Alfa Romeo",
+  "Aston Martin",
+  "Audi",
+  "Bentley",
+  "BMW",
+  "Bugatti",
+  "Cadillac",
+  "Chevrolet",
+  "Chrysler",
+  "Citroën",
+  "Dacia",
+  "Daewoo",
+  "Daihatsu",
+  "Dodge",
+  "Donkervoort",
+  "DS",
+  "Ferrari",
+  "Fiat",
+  "Fisker",
+  "Ford",
+  "Honda",
+  "Hummer",
+  "Hyundai",
+  "Infiniti",
+  "Iveco",
+  "Jaguar",
+  "Jeep",
+  "Kia",
+  "KTM",
+  "Lada",
+  "Lamborghini",
+  "Lancia",
+  "Land Rover",
+  "Landwind",
+  "Lexus",
+  "Lotus",
+  "Maserati",
+  "Maybach",
+  "Mazda",
+  "McLaren",
+  "Mercedes-Benz",
+  "MG",
+  "Mini",
+  "Mitsubishi",
+  "Morgan",
+  "Nissan",
+  "Opel",
+  "Peugeot",
+  "Porsche",
+  "Renault",
+  "Rolls-Royce",
+  "Rover",
+  "Saab",
+  "Seat",
+  "Skoda",
+  "Smart",
+  "SsangYong",
+  "Subaru",
+  "Suzuki",
+  "Tesla",
+  "Toyota",
+  "Volkswagen",
+  "Volvo",
+];
 
 const FormField = ({ fieldName, setter }) => {
   return (
@@ -94,7 +96,7 @@ const NewCar = () => {
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
   const [color, setColor] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState("empty");
   const [loading, setLoading] = useState(false);
 
   const getImage = async () => {
@@ -106,12 +108,27 @@ const NewCar = () => {
     setImage(image);
   };
 
+  const saveCurrentCar = async () => {
+    const car = {
+      make,
+      model,
+      year,
+      color,
+      image,
+    };
+    const currentCars = await getCachedData("cars");
+    const parsedCars = JSON.parse(currentCars);
+    const cars = parsedCars ? [...parsedCars, car] : [car];
+    await setCachedData("cars", JSON.stringify(cars));
+    router.replace("/");
+  };
+
   return (
     <View className="p-5 h-screen">
       <Image
         source={{ uri: image }}
         className="h-48 w-48 mx-auto mb-10 rounded-md"
-        resizeMode="cover"S
+        resizeMode="cover"
       />
       <SelectDropdown
         className="border border-green-100"
@@ -135,9 +152,9 @@ const NewCar = () => {
         onPress={getImage}
       >
         <Text className="text-center font-black">Generate image</Text>
-        {loading && <ActivityIndicator size={"small"}/>}
+        {loading && <ActivityIndicator size={"small"} />}
       </TouchableOpacity>
-      <TouchableOpacity className="bg-green-200 p-6 rounded mt-6">
+      <TouchableOpacity className="bg-green-200 p-6 rounded mt-6" onPress={saveCurrentCar}>
         <Text className="text-center font-black">Add car</Text>
       </TouchableOpacity>
     </View>
