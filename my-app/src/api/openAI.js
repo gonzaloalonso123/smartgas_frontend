@@ -4,8 +4,6 @@ import { OPENAI_KEY } from "@env";
 
 const models = ["gpt-3.5-turbo-1106", "gpt-4"];
 
-const log = console.log;
-
 const getFunctionParams = async (
   messages,
   tools,
@@ -65,11 +63,6 @@ export const getTableData = async (userMessage) => {
         },
       },
     ]
-  );
-  console.log(
-    JSON.parse(
-      response.data.choices[0].message.tool_calls[0].function.arguments
-    )
   );
   return (
     JSON.parse(
